@@ -2,7 +2,7 @@ import React from 'react';
 import { Navbar, Nav, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-const MyNavbar = ({ loggedIn, onLogout, onSignIn }) => {
+const MyNavbar = ({ isLogin, onLogout, onSignIn }) => {
   return (
     <Navbar bg="light" expand="lg">
       <Link to='/'><Navbar.Brand className='ms-5'>My App</Navbar.Brand></Link>
@@ -14,7 +14,7 @@ const MyNavbar = ({ loggedIn, onLogout, onSignIn }) => {
         </Nav>
         <Nav>
           <div className="ml-auto">
-            {loggedIn ? (
+            {isLogin ? (
               <React.Fragment>
                 <Nav.Link href="/profile">Profile</Nav.Link>
                 <Button variant="outline-primary" onClick={onLogout}>Logout</Button>

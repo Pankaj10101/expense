@@ -2,17 +2,14 @@ import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-const SignUp = ({ onSignup, onLogin }) => {
+const SignIn = ({ onSignIn, onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleSignup = (e) => {
     e.preventDefault();
-    if(email && password && confirmPassword && password===confirmPassword){
-        onSignup(email, password)
-    }else if(email && password && confirmPassword && password!==confirmPassword){
-        alert('Password not match')
+    if(email && password){
+        onSignIn(email, password)
     }else{
         alert('Fill All Fields')
     }
@@ -20,7 +17,7 @@ const SignUp = ({ onSignup, onLogin }) => {
 
   return (
     <div className="container d-flex flex-column align-items-center mt-5">
-      <h2>Signup</h2>
+      <h2>Sign In</h2>
       <Form onSubmit={handleSignup} className="w-25 d-flex flex-column gap-2">
         <Form.Group controlId="email">
           <Form.Label>Email</Form.Label>
@@ -42,26 +39,16 @@ const SignUp = ({ onSignup, onLogin }) => {
           />
         </Form.Group>
 
-        <Form.Group controlId="confirmPassword">
-          <Form.Label>Confirm Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Confirm password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        </Form.Group>
-
         <Button variant="primary" type="submit" className="w-100 mt-4" >
-          Sign Up
+          Sign In
         </Button>
       </Form>
 
       <div className="mt-3">
-        <p>Already have an account? <Link to='/sign-in' onClick={onLogin}>Login</Link></p>
+        <p>Don't have an account? <Link to='/sign-up' onClick={onLogin}>Create Account</Link></p>
       </div>
     </div>
   );
 };
 
-export default SignUp;
+export default SignIn;
