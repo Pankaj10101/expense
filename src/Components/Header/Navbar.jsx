@@ -16,7 +16,7 @@ const MyNavbar = ({ isLogin, onLogout, onSignIn }) => {
           <div className="ml-auto">
             {isLogin ? (
               <React.Fragment>
-                <Nav.Link href="/profile">Profile</Nav.Link>
+                <Nav.Link href="/profile">Your profile is incomplete..<Link to='/profile'> Complete Now</Link></Nav.Link>
                 <Button variant="outline-primary" onClick={onLogout}>Logout</Button>
               </React.Fragment>
             ) : (
