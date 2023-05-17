@@ -2,7 +2,7 @@ import React from 'react';
 import { Navbar, Nav, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-const MyNavbar = ({ isLogin, onLogout, onSignIn }) => {
+const MyNavbar = ({ isLogin, onLogout, onSignIn ,isCompleteProfile }) => {
   return (
     <Navbar bg="light" expand="lg">
       <Link to='/'><Navbar.Brand className='ms-5'>My App</Navbar.Brand></Link>
@@ -16,7 +16,9 @@ const MyNavbar = ({ isLogin, onLogout, onSignIn }) => {
           <div className="ml-auto">
             {isLogin ? (
               <React.Fragment>
-                <Nav.Link href="/profile">Your profile is incomplete..<Link to='/profile'> Complete Now</Link></Nav.Link>
+
+                {!isCompleteProfile && <Nav.Link href="/profile">Your profile is incomplete..<Link to='/profile'> Complete Now</Link></Nav.Link>}
+                {isCompleteProfile && <Nav.Link href="/profile">Profile</Nav.Link>}
                 <Button variant="outline-primary" onClick={onLogout}>Logout</Button>
               </React.Fragment>
             ) : (

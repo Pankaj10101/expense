@@ -11,10 +11,23 @@ import UpdateProfile from "./Components/Profile/UpdateProfile";
 function App() {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
+  const [isCompleteProfile, setIsCompleteProfile] = useState(false)
 
+  const getProfileData = async (token)=>{
+    const response = await axios.post('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyDo-GMUlH9BQyAiH-8WzkaPymtrR5opfKw', {
+      idToken:token
+    })
+    const data = response.data
+    if(data.users){
+      setIsCompleteProfile(true)
+    }else{
+      setIsCompleteProfile(false)
+    }
+  }
   useEffect(() => {
     const token = localStorage.getItem("loginId");
     if (token) {
+      getProfileData(token)
       setIsLogin(true);
     } else {
       setIsLogin(false);
@@ -88,7 +101,10 @@ function App() {
           returnSecureToken: true
         }
       );
-      console.log(response);
+      const data = await response.data
+      if(data.status===200){
+        setIsCompleteProfile(true)
+      }
       // Handle the response or perform additional actions as needed
     } catch (error) {
       console.log(error.response.data.error);
@@ -99,7 +115,7 @@ function App() {
   return (
     <>
       <>
-        <Navbar isLogin={isLogin} onLogout={onLogOut} />
+        <Navbar isLogin={isLogin} onLogout={onLogOut} isCompleteProfile={isCompleteProfile} />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route
