@@ -199,6 +199,54 @@ const Context = ({ children }) => {
     }
 
   }
+
+  const handleDeleteExpense = async (id)=>{
+    const res = await axios(`${API}.json`)
+    const data = res.data
+
+    if(data){
+      for(let key in data){
+        if(data[key].id===id){
+          const response = await axios.delete(`${API}/${key}.json`)
+          if(response.status ===200){
+            setExpenses(expenses.filter((item)=>item.id!==id))
+            console.log('Expense Deleted')
+          }
+        }
+      }
+    }
+  }
+  const handleEditExpense = async (updatedExpense, id) => {
+    try {
+      const res = await axios(`${API}.json`);
+      const data = res.data;
+  
+      if (data) {
+        for (let key in data) {
+          if (data[key].id === id) {
+            const response = await axios.put(`${API}/${key}.json`, updatedExpense);
+            console.log(response)
+            if (response.status === 200) {
+              const updatedExpenses = expenses.map((item) => {
+                console.log(item)
+                if (item.id === id) {
+                  return { ...item, ...updatedExpense };
+                }
+                return item;
+              });
+              setExpenses(updatedExpenses);
+              console.log("Expense updated successfully!");
+              console.log('Expense Updated');
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.log("Error updating expense:", error);
+    }
+  };
+  
+  
   return (
     <Store.Provider
       value={{
@@ -210,6 +258,8 @@ const Context = ({ children }) => {
         sendVerificationEmail,
         onForgetPassword,
         addExpenses,
+        handleDeleteExpense,
+        handleEditExpense,
         isVerified,
         isLogin,
         isCompleteProfile,
