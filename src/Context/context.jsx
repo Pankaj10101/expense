@@ -10,6 +10,7 @@ const Context = ({ children }) => {
   const [isLogin, setIsLogin] = useState(false);
   const [profileData, setProfileData] = useState({})
   const [isCompleteProfile, setIsCompleteProfile] = useState(false)
+  const [isVerified, setIsVerified] = useState(false)
 
   const getProfileData = async (token)=>{
     const response = await axios.post('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyDo-GMUlH9BQyAiH-8WzkaPymtrR5opfKw', {
@@ -27,11 +28,20 @@ const Context = ({ children }) => {
     }
   }
 
+  // const confirmEmail = async ()=>{
+  //   const oobCode = localStorage.getItem('oobCode')
+  //   const response = await axios.post('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyDo-GMUlH9BQyAiH-8WzkaPymtrR5opfKw',{
+  //     oobCode: oobCode
+  //   })
+  //   console.log(response)
+  // }
+
   useEffect(() => {
     const token = localStorage.getItem("loginId");
     if (token) {
         getProfileData(token)
       setIsLogin(true);
+      // confirmEmail()
     } else {
       setIsLogin(false);
     }
@@ -113,13 +123,27 @@ const Context = ({ children }) => {
     }
   };
 
+  const sendVerificationEmail = async ()=>{
+    const token = localStorage.getItem('loginId')
+    const response = await axios.post('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyDo-GMUlH9BQyAiH-8WzkaPymtrR5opfKw',{
+      requestType:'VERIFY_EMAIL',
+      idToken :token
+    })
+    const data = response.data
+    if(response.status===200){
+      alert('verification mail sent')
+    }else{
+      alert('verification mail not sent')
+    }
+  }
+
   const onLogout = async ()=>{
     localStorage.removeItem("loginId");
     setIsLogin(false);
     navigate("/sign-up");
   }
   return (
-    <Store.Provider value={{ onSignup, onSignIn,onLogout,updateProfile, setProfileData , isLogin, isCompleteProfile, profileData }}>
+    <Store.Provider value={{ onSignup, onSignIn,onLogout,updateProfile, setProfileData, sendVerificationEmail, isVerified , isLogin, isCompleteProfile, profileData }}>
       {children}
     </Store.Provider>
   );
