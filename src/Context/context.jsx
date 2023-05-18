@@ -5,12 +5,16 @@ import { useNavigate } from "react-router-dom";
 export const Store = createContext();
 
 const Context = ({ children }) => {
+  const UserMail = localStorage.getItem('userName')
+  const API = `https://expense-tracker-6667c-default-rtdb.firebaseio.com/${UserMail}`
+
   const navigate = useNavigate();
 
   const [isLogin, setIsLogin] = useState(false);
   const [profileData, setProfileData] = useState({});
   const [isCompleteProfile, setIsCompleteProfile] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const [expenses, setExpenses] = useState([]);
 
   const getProfileData = async (token) => {
     try {
@@ -120,6 +124,8 @@ const Context = ({ children }) => {
         localStorage.setItem("loginId", data.idToken);
         setIsLogin(true);
         navigate("/");
+        const userName= email.replace(/[^a-zA-Z0-9 ]/g, '')
+        localStorage.setItem('userName', userName )
         console.log("SignIn");
       } else {
         console.log("SignIn failed");
@@ -161,8 +167,38 @@ const Context = ({ children }) => {
   const onLogout = async () => {
     localStorage.removeItem("loginId");
     setIsLogin(false);
+    localStorage.removeItem('userName')
     navigate("/sign-up");
   };
+
+  const getExpenses = async ()=>{
+    const response = await axios(`${API}.json`)
+    const data = response.data
+    if (data) {
+      const expenseData = Object.values(data);
+      setExpenses(expenseData);
+    } else {
+      setExpenses([]);
+    }
+  }
+  useEffect(()=>{
+    getExpenses()
+  }, [isLogin,expenses])
+
+
+  const addExpenses = async (newExpense)=>{
+    try {
+      const response = await axios.post(`${API}.json`, newExpense)
+      if(response.status===200){
+        setExpenses([...expenses, newExpense]) 
+      }else{
+        alert('Item not added')
+      }
+    } catch (error) {
+      console.log(error)   
+    }
+
+  }
   return (
     <Store.Provider
       value={{
@@ -173,10 +209,12 @@ const Context = ({ children }) => {
         setProfileData,
         sendVerificationEmail,
         onForgetPassword,
+        addExpenses,
         isVerified,
         isLogin,
         isCompleteProfile,
         profileData,
+        expenses
       }}
     >
       {children}

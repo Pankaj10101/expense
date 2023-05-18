@@ -3,11 +3,11 @@ import { Form, Button, Table } from 'react-bootstrap';
 import { Store } from '../../Context/context';
 
 const Home = () => {
-  const { isLogin } = useContext(Store);
+  const { isLogin, addExpenses, expenses } = useContext(Store);
   const [moneySpent, setMoneySpent] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
-  const [expenses, setExpenses] = useState([]);
+
 
   const handleAddExpense = (e) => {
     e.preventDefault();
@@ -18,7 +18,7 @@ const Home = () => {
         description,
         category,
       };
-      setExpenses([...expenses, newExpense]);
+      addExpenses(newExpense)
       setMoneySpent('');
       setDescription('');
       setCategory('');
