@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { Store } from '../../Context/context';
 
-const SignIn = ({ onSignIn, onLogin }) => {
+const SignIn = ({ onLogin }) => {
+  const {onSignIn} = useContext(Store)
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 

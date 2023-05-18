@@ -1,16 +1,28 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
+import { Store } from '../../Context/context';
 
-const UpdateProfile = ({updateProfile}) => {
+const UpdateProfile = () => {
+  const {updateProfile, profileData, isCompleteProfile, setProfileData} = useContext(Store)
   const [name, setName] = useState('');
   const [profilePhoto, setProfilePhoto] = useState('');
 
-  const handleUpdateProfile = (e) => {
+  const handleUpdateProfile = async (e) => {
     e.preventDefault();
-    updateProfile(name, profilePhoto)
-    setName('');
-    setProfilePhoto('')
+    await updateProfile(name, profilePhoto);
+    setProfileData({ name, photo: profilePhoto });
   };
+
+  useEffect(()=>{
+    if(isCompleteProfile){
+      const {name, photo} = profileData
+      setName(name)
+      setProfilePhoto(photo)
+    }else{
+      setName('');
+      setProfilePhoto('')
+    }
+  }, [isCompleteProfile])
 
   return (
     <div className="container">
