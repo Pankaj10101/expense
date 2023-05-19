@@ -1,22 +1,23 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { Form, Button, Table } from "react-bootstrap";
-import { Store } from "../../Context/context";
+import { addExpense, handleDeleteExpense, setExpenses } from "../../Store/Slices/ExpenseSlice";
+import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Home = () => {
-  const {
-    isLogin,
-    addExpenses,
-    expenses,
-    handleEditExpense,
-    handleDeleteExpense,  
-  } = useContext(Store);
-
-  const [moneySpent, setMoneySpent] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [editingId, setEditingId] = useState(null);
-
-  const handleAddExpense = (e) => {
+  const dispatch = useDispatch()
+  const UserMail = localStorage.getItem('userName')
+  const API = `https://expense-tracker-6667c-default-rtdb.firebaseio.com/${UserMail}`
+    
+    const isLogin = useSelector((state) => state.auth.isLogin);
+    const expenses = useSelector((state) => state.expense);
+    const [moneySpent, setMoneySpent] = useState("");
+    const [description, setDescription] = useState("");
+    const [category, setCategory] = useState("");
+    const [editingId, setEditingId] = useState(null);
+    
+  const handleAddExpense = async (e) => {
     e.preventDefault();
     if (moneySpent && description && category) {
       const newExpense = {
@@ -25,12 +26,22 @@ const Home = () => {
         description,
         category,
       };
-      addExpenses(newExpense);
+      try {
+        const response = await axios.post(`${API}.json`, newExpense);
+        if (response.status === 200) {
+          dispatch(addExpense( newExpense));
+          toast.success('Expense Added')
+        } else {
+          toast.error("Expense not added");
+        }
+      } catch (error) {
+        console.log(error);
+      }
       setMoneySpent("");
       setDescription("");
       setCategory("");
     } else {
-      alert("Fill all fields");
+      toast.error("Fill all fields");
     }
   };
 
@@ -48,7 +59,7 @@ const Home = () => {
     setCategory("");
   };
 
-  const handleUpdateExpense = (e) => {
+  const handleUpdateExpense = async (e) => {
     e.preventDefault();
     if (moneySpent && description && category) {
       const updatedExpense = {
@@ -57,15 +68,57 @@ const Home = () => {
         description,
         category,
       };
-      handleEditExpense(updatedExpense, editingId);
+      try {
+        const res = await axios(`${API}.json`);
+        const data = res.data;
+        const id = editingId
+        if (data) {
+          for (let key in data) {
+            if (data[key].id === id) {
+              const response = await axios.put(`${API}/${key}.json`, updatedExpense);
+              console.log(response)
+              if (response.status === 200) {
+                const updatedExpenses = expenses.map((item) => {
+                  console.log(item)
+                  if (item.id === id) {
+                    return { ...item, ...updatedExpense };
+                  }
+                  return item;
+                });
+                dispatch(setExpenses(updatedExpenses));
+                toast.success('Expense Updated')
+              }
+            }
+          }
+        }
+      } catch (error) {
+        toast.error("Error updating expense:");
+      }
       setEditingId(null);
       setMoneySpent("");
       setDescription("");
       setCategory("");
     } else {
-      alert("Fill all fields");
+      toast.error("Fill all fields");
     }
   };
+
+  const deleteExpense = async (id)=>{
+    const res = await axios(`${API}.json`)
+    const data = res.data
+
+    if(data){
+      for(let key in data){
+        if(data[key].id===id){
+          const response = await axios.delete(`${API}/${key}.json`)
+          if(response.status ===200){
+            dispatch(handleDeleteExpense(id))
+            toast.success('Expense Deleted')
+          }
+        }
+      }
+    }
+  }
 
   if (!isLogin) {
     return <div className="text-center fs-5">Welcome To Expense Tracker</div>;
@@ -205,7 +258,10 @@ const Home = () => {
                   <td>{expense.moneySpent}</td>
                   <td>
                     {!editingId || editingId !== expense.id ? (
-                      <Button variant="info" onClick={() => handleEdit(expense)}>
+                      <Button
+                        variant="info"
+                        onClick={() => handleEdit(expense)}
+                      >
                         Edit
                       </Button>
                     ) : null}
@@ -213,7 +269,7 @@ const Home = () => {
                   <td>
                     <Button
                       variant="danger"
-                      onClick={() => handleDeleteExpense(expense.id)}
+                      onClick={() => deleteExpense(expense.id)}
                     >
                       Delete
                     </Button>

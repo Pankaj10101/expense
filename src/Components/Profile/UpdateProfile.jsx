@@ -1,27 +1,63 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Button, Alert, Row, Col, Container } from "react-bootstrap";
-import { Store } from "../../Context/context";
+import axios from "axios";
+import { setProfileData, setIsCompleteProfile } from "../../Store/Slices/AuthSlice";
+import {useDispatch, useSelector} from 'react-redux'
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const UpdateProfile = () => {
-  const {
-    updateProfile,
-    profileData,
-    isCompleteProfile,
-    setProfileData,
-    sendVerificationEmail,
-    isVerified
-  } = useContext(Store);
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const isCompleteProfile = useSelector(state=>state.auth.isCompleteProfile)
+  const profileData = useSelector(state=>state.auth.profileData)
+  const isVerified = useSelector(state=>state.auth.isVerified)
+
   const [name, setName] = useState("");
   const [profilePhoto, setProfilePhoto] = useState("");
 
+  
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
-    await updateProfile(name, profilePhoto);
-    setProfileData({ name, photo: profilePhoto });
+    try {
+      const token = localStorage.getItem("loginId");
+      const response = await axios.post(
+        "https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyDo-GMUlH9BQyAiH-8WzkaPymtrR5opfKw",
+        {
+          idToken: token,
+          displayName: name,
+          photoUrl: profilePhoto,
+          returnSecureToken: true,
+        }
+      );
+      if (response.status === 200) {
+        dispatch(setIsCompleteProfile(true));
+        console.log("profile updated");
+        toast.success("Profile Updated");
+        navigate("/");
+      } else {
+        toast.error("profile not updated");
+      }
+    } catch (error) {
+      console.log(error.response.data.error);
+    }
+    dispatch(setProfileData({ name, photo: profilePhoto }))
   };
 
-  const handleSendVerificationEmail = () => {
-    sendVerificationEmail();
+  const handleSendVerificationEmail = async () => {
+    const token = localStorage.getItem("loginId");
+    const response = await axios.post(
+      "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyDo-GMUlH9BQyAiH-8WzkaPymtrR5opfKw",
+      {
+        requestType: "VERIFY_EMAIL",
+        idToken: token,
+      }
+    );
+    if (response.status === 200) {
+      toast.success("verification mail sent");
+    } else {
+      toast.error("verification mail not sent");
+    }
   };
 
   useEffect(() => {
@@ -33,7 +69,7 @@ const UpdateProfile = () => {
       setName("");
       setProfilePhoto("");
     }
-  }, [isCompleteProfile]);
+  }, [isCompleteProfile,profileData]);
 
   return (
     <div className="container">

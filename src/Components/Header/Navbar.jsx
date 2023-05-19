@@ -1,10 +1,23 @@
-import React, { useContext } from 'react';
-import { Navbar, Nav, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { Store } from '../../Context/context';
+import React from "react";
+import { Navbar, Nav, Button } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { setLoginStatus } from "../../Store/Slices/AuthSlice";
+import { toast } from "react-toastify";
 
 const MyNavbar = () => {
-  const { isLogin, onLogout, isCompleteProfile } = useContext(Store);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const isLogin = useSelector((state) => state.auth.isLogin);
+  const isCompleteProfile = useSelector(state=>state.auth.isCompleteProfile)
+
+  const onLogout = async () => {
+    localStorage.removeItem("loginId");
+    dispatch(setLoginStatus(false));
+    localStorage.removeItem("userName");
+    toast.success('LogOut Successfull')
+    navigate("/sign-in");
+  };
 
   return (
     <Navbar bg="light" expand="lg">
@@ -12,7 +25,11 @@ const MyNavbar = () => {
         <Navbar.Brand className="ms-5">My App</Navbar.Brand>
       </Link>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
-      <Navbar.Collapse id="basic-navbar-nav" className="me-5" style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <Navbar.Collapse
+        id="basic-navbar-nav"
+        className="me-5"
+        style={{ display: "flex", justifyContent: "space-between" }}
+      >
         <Nav className="mr-auto">
           <Nav.Link as={Link} to="/about">
             About
