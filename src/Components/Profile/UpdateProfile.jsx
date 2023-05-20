@@ -1,22 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { Form, Button, Alert, Row, Col, Container } from "react-bootstrap";
 import axios from "axios";
-import { setProfileData, setIsCompleteProfile } from "../../Store/Slices/AuthSlice";
-import {useDispatch, useSelector} from 'react-redux'
+import {
+  setProfileData,
+  setIsCompleteProfile,
+} from "../../Store/Slices/AuthSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const UpdateProfile = () => {
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
-  const isCompleteProfile = useSelector(state=>state.auth.isCompleteProfile)
-  const profileData = useSelector(state=>state.auth.profileData)
-  const isVerified = useSelector(state=>state.auth.isVerified)
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const isCompleteProfile = useSelector(
+    (state) => state.auth.isCompleteProfile
+  );
+  const profileData = useSelector((state) => state.auth.profileData);
+  const isVerified = useSelector((state) => state.auth.isVerified);
 
   const [name, setName] = useState("");
   const [profilePhoto, setProfilePhoto] = useState("");
 
-  
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     try {
@@ -41,7 +45,7 @@ const UpdateProfile = () => {
     } catch (error) {
       console.log(error.response.data.error);
     }
-    dispatch(setProfileData({ name, photo: profilePhoto }))
+    dispatch(setProfileData({ name, photo: profilePhoto }));
   };
 
   const handleSendVerificationEmail = async () => {
@@ -69,11 +73,14 @@ const UpdateProfile = () => {
       setName("");
       setProfilePhoto("");
     }
-  }, [isCompleteProfile,profileData]);
+  }, [isCompleteProfile, profileData]);
 
   return (
     <div className="container">
-      <h2 className="mt-5">Update Profile</h2>
+      <div className="d-flex justify-content-between">
+        <h2 className="mt-5">Update Profile</h2>
+        <Button variant="success m-4" >Activate Premium</Button>
+      </div>
       {!isVerified && (
         <Alert variant="warning">
           Your account is not verified. Click the button below to send a
@@ -84,7 +91,6 @@ const UpdateProfile = () => {
         </Alert>
       )}
       {isVerified && <Alert variant="success">Your account is verified.</Alert>}
-
 
       {isCompleteProfile && (
         <Container className="my-3 py-3 border rounded">

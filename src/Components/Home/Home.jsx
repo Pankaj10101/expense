@@ -279,7 +279,18 @@ const Home = () => {
 
       {expenses.length > 0 && (
         <>
+        <div className="d-flex justify-content-between">
           <h3>Expenses:</h3>
+          <div className="download-button">
+              <CSVLink
+                data={handleDownloadExpenses()}
+                filename="expenses.csv"
+                className="btn btn-success"
+              >
+                Download Expenses as CSV
+              </CSVLink>
+            </div>
+            </div>
           <div
             className="mt-4 expenses-container"
             style={{ height: "50vh", overflowY: "auto" }}
@@ -333,6 +344,7 @@ const Home = () => {
           <div className="total-expenses">
             <h4>Total Expenses:</h4>
             <p className="total-amount">Total Amount: ${totalExpenses}</p>
+            
           </div>
         </div>
       )}
