@@ -22,7 +22,6 @@ function App() {
 
   const dispatch = useDispatch();
   const isLogin = useSelector((state) => state.auth.isLogin);
-  const expenses = useSelector(state=>state.expenses)
   const getProfileData = async (token) => {
     try {
       const response = await axios.post(

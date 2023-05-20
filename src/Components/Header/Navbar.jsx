@@ -21,8 +21,8 @@ const MyNavbar = () => {
 
   return (
     <Navbar bg="light" expand="lg">
-      <Link to="/">
-        <Navbar.Brand className="ms-5">My App</Navbar.Brand>
+      <Link to="/" className="text-decoration-none">
+        <Navbar.Brand className="ms-5 ">Expense Tracker</Navbar.Brand>
       </Link>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse
@@ -41,7 +41,7 @@ const MyNavbar = () => {
         <Nav>
           <div className="ml-auto">
             {isLogin ? (
-              <React.Fragment>
+              <div className="d-flex gap-4">
                 {!isCompleteProfile && (
                   <Nav.Link as={Link} to="/profile">
                     Your profile is incomplete.. <span>Complete Now</span>
@@ -55,7 +55,7 @@ const MyNavbar = () => {
                 <Button variant="outline-primary" onClick={onLogout}>
                   Logout
                 </Button>
-              </React.Fragment>
+              </div>
             ) : (
               <>
                 <Link to="/sign-up">

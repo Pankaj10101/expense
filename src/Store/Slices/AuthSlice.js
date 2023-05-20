@@ -11,7 +11,7 @@ const authSlice = createSlice({
   reducers: {
     setLoginStatus: (state, action) => {
       state.isLogin = action.payload;
-    },
+    },  
     setIsCompleteProfile: (state, action) => {
       state.isCompleteProfile = action.payload;
     },
