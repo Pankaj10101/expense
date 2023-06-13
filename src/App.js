@@ -34,6 +34,7 @@ function App() {
       if (data.users) {
         const { displayName, photoUrl } = data.users[0];
         if (displayName && photoUrl) {
+          console.log(displayName, photoUrl)
           dispatch(setIsCompleteProfile(true));
           dispatch(setProfileData({ name: displayName, photo: photoUrl }));
         }

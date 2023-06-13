@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Form, Button, Alert, Row, Col, Container } from "react-bootstrap";
-import axios from "axios";
 import {
   setProfileData,
   setIsCompleteProfile,
@@ -8,6 +7,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const UpdateProfile = () => {
   const navigate = useNavigate();
@@ -50,17 +50,22 @@ const UpdateProfile = () => {
 
   const handleSendVerificationEmail = async () => {
     const token = localStorage.getItem("loginId");
-    const response = await axios.post(
-      "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyDo-GMUlH9BQyAiH-8WzkaPymtrR5opfKw",
-      {
-        requestType: "VERIFY_EMAIL",
-        idToken: token,
+    try {
+      
+      const response = await axios.post(
+        "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyDo-GMUlH9BQyAiH-8WzkaPymtrR5opfKw",
+        {
+          requestType: "VERIFY_EMAIL",
+          idToken: token,
+        }
+      );
+      if (response.status === 200) {
+        toast.success("verification mail sent");
+      } else {
+        toast.error("verification mail not sent");
       }
-    );
-    if (response.status === 200) {
-      toast.success("verification mail sent");
-    } else {
-      toast.error("verification mail not sent");
+    } catch (error) {
+      console.log(error)
     }
   };
 
